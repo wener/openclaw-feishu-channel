@@ -29,32 +29,48 @@
 
 ```mermaid
 graph TB
+    subgraph OpenClaw["OpenClaw Gateway"]
+        direction TB
+        Core[OpenClaw Core]
+        
+        subgraph Agents["多个 Agent"]
+            A1[Agent 1]
+            A2[Agent 2]
+            A3[Agent 3]
+            A4[Agent ...]
+        end
+    end
+    
     subgraph Feishu["飞书群聊"]
-        U[用户]
-        B1[Bot入口]
-        B2[Bot技术]
-        B3[Bot健康]
-        B4[Bot营销]
+        direction LR
+        Group[群组]
+        
+        subgraph Bots["多个 Bot"]
+            B1[Bot 1]
+            B2[Bot 2]
+            B3[Bot 3]
+            B4[Bot ...]
+        end
     end
     
-    subgraph Gateway["OpenClaw Gateway"]
-        A1[Agent入口]
-        A2[Agent技术]
-        A3[Agent健康]
-        A4[Agent营销]
-        R[路由中间件]
-    end
+    Core --> A1
+    Core --> A2
+    Core --> A3
+    Core --> A4
     
-    U --> B1
-    B1 --> A1
-    
-    A1 --> R
-    R --> A2
+    A1 --> B1
     A2 --> B2
-    B2 --> U
+    A3 --> B3
+    A4 --> B4
     
-    A1 -.-> A3
-    A1 -.-> A4
+    B1 --> Group
+    B2 --> Group
+    B3 --> Group
+    B4 --> Group
+    
+    B1 -.->|@Bot2| Group
+    B2 -.->|@Bot3| Group
+    B3 -.->|@Bot1| Group
 ```
 
 **核心流程：**
