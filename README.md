@@ -27,25 +27,7 @@
 
 ## 🏗️ 架构设计
 
-```mermaid
-graph LR
-    OpenClaw[OpenClaw] --> A1[Agent1]
-    OpenClaw --> A2[Agent2]
-    OpenClaw --> A3[Agent3]
-    OpenClaw --> A4[Agent4]
-    
-    A1 --> B1[Bot1]
-    A2 --> B2[Bot2]
-    A3 --> B3[Bot3]
-    A4 --> B4[Bot4]
-    
-    B1 --> Group[群聊]
-    B2 --> Group
-    B3 --> Group
-    B4 --> Group
-    
-    User[用户] --> Group
-```
+<img src="./architecture-beautiful.svg" width="900" alt="OpenClaw 多 Agent 多 Bot 协作架构">
 
 **使用流程：**
 
