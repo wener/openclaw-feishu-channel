@@ -10,7 +10,7 @@
 
 这是 **OpenClaw** 平台的飞书（Feishu/Lark）通道插件，它的最大创新在于：
 
-> **支持多 Agent 自主协作 —— 让飞书机器人之间可以相互 @ 和分工协作**
+> **支持多 Agent 自主协作 -- 让飞书机器人之间可以相互 @ 和分工协作**
 
 传统的聊天机器人平台（包括官方方案）通常有以下限制：
 - ❌ 一个群聊里只能有一个机器人在运行
@@ -27,127 +27,41 @@
 
 ## 🏗️ 架构设计
 
-### 传统方案 vs 本方案
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      传统方案（单机器人）                      │
-├─────────────────────────────────────────────────────────────┤
-│  用户 @机器人A "帮我处理这个需求"                               │
-│         ↓                                                   │
-│  机器人A（万能型，需要处理所有领域）                             │
-│         ↓                                                   │
-│  回复用户                                                   │
-└─────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────┐
-│                   本方案（多 Agent 协作）                      │
-├─────────────────────────────────────────────────────────────┤
-│  用户 @入口机器人 "帮我处理这个需求"                            │
-│         ↓                                                   │
-│  入口机器人（Router）分析需求                                  │
-│         ↓                                                   │
-│  "@技术专家 这个问题需要你来看看"                              │
-│         ↓                                                   │
-│  技术专家 Agent 收到消息，独立处理                              │
-│         ↓                                                   │
-│  "我是技术专家，这个问题应该这样解决..."                        │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### 消息路由流程
-
-```
-用户发送消息
-    ↓
-入口机器人（isRouter=true）接收消息
-    ↓
-Agent 生成回复
-    ↓
-检查回复内容是否包含 @其他机器人
-    ↓
-    ├─ 是 → 通过 session_send 路由到目标 Agent
-    │         目标 Agent 用自己的身份回复
-    │
-    └─ 否 → 直接回复用户
-```
-
----
-
-## 📊 系统架构图
-
-### 整体架构
-
 ```mermaid
 graph TB
-    User[用户] -->|@入口机器人| Bot1[飞书 Bot]
-    Bot1 -->|Webhook| Gateway[OpenClaw Gateway]
-    
-    subgraph OpenClaw["OpenClaw 内部"]
-        Gateway --> Router[路由中间件]
-        Router --> Agent1[入口Agent]
-        Router --> Agent2[技术Agent]
-        Router --> Agent3[健康Agent]
+    subgraph FeishuGroup["飞书群聊"]
+        User[用户]
+        Bot1[Bot: 入口机器人]
+        Bot2[Bot: 技术专家]
+        Bot3[Bot: 健康顾问]
+        Bot4[Bot: 营销专家]
     end
     
-    Agent1 -->|需要@技术| Router
-    Router -->|session_send| Agent2
-    Agent2 --> Bot2[技术 Bot]
+    subgraph OpenClaw["OpenClaw Gateway"]
+        Agent1[Agent: 入口]
+        Agent2[Agent: 技术]
+        Agent3[Agent: 健康]
+        Agent4[Agent: 营销]
+        Router[路由中间件]
+    end
+    
+    User -->|@入口| Bot1
+    Bot1 --> Agent1
+    
+    Agent1 -->|生成回复：@技术专家| Router
+    Router -->|消息路由| Agent2
+    Agent2 -->|用自己的身份回复| Bot2
     Bot2 -->|@技术专家| User
+    
+    Agent1 -.->|也可以@| Agent3
+    Agent1 -.->|也可以@| Agent4
 ```
 
-### 消息路由流程
-
-```mermaid
-sequenceDiagram
-    participant U as 用户
-    participant B1 as 入口Bot
-    participant G as OpenClaw
-    participant R as 路由中间件
-    participant A1 as 入口Agent
-    participant A2 as 技术Agent
-    participant B2 as 技术Bot
-
-    U->>B1: @入口 帮我解决技术问题
-    B1->>G: Webhook 推送
-    G->>A1: 创建 Session
-    
-    Note over A1: LLM 分析需求
-    A1->>G: 回复："@技术专家 请帮忙"
-    
-    G->>R: deliver() 拦截
-    R->>R: 解析 @技术专家
-    R->>R: 匹配 router-config
-    
-    R->>G: 路由到技术Agent
-    G->>A2: 创建独立 Session
-    
-    Note over A2: LLM 专业回复
-    A2->>G: 我是技术专家...
-    G->>B2: sendMessage()
-    B2->>U: @技术专家 我是...
-```
-
-### 与传统方案对比
-
-```mermaid
-graph LR
-    subgraph Traditional["传统方案"]
-        T1[用户] --> T2[单一Agent处理所有]
-        T2 --> T3[回复用户]
-    end
-
-    subgraph New["本方案-多Agent协作"]
-        N1[用户] --> N2[入口Agent分析]
-        N2 --> N3{需要其他?}
-        N3 -->|是| N4[技术Agent]
-        N3 -->|是| N5[营销Agent]
-        N3 -->|否| N6[直接回复]
-        N4 --> N7[技术Bot]
-        N5 --> N8[营销Bot]
-        N6 --> N9[入口Bot]
-    end
-```
+**核心流程：**
+1. 用户@入口机器人 → OpenClaw 入口 Agent 处理
+2. 入口 Agent 分析后@技术专家 → 消息路由中间件拦截
+3. 路由到技术 Agent → 技术 Agent 独立处理
+4. 技术 Bot 用自己的身份回复用户
 
 > 💡 **查看完整架构图**：参见 [ARCHITECTURE.md](./ARCHITECTURE.md)
 
