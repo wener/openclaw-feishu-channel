@@ -74,6 +74,88 @@ Agent 生成回复
 
 ---
 
+## 📊 系统架构图
+
+### 整体架构
+
+```mermaid
+graph TB
+    User[用户] -->|@入口机器人| Bot1[飞书 Bot]
+    Bot1 -->|Webhook| Gateway[OpenClaw Gateway]
+    
+    subgraph "OpenClaw 内部"
+        Gateway --> Router[路由中间件]
+        Router --> Agent1[入口 Agent<br/>isRouter=true]
+        Router --> Agent2[技术 Agent]
+        Router --> Agent3[健康 Agent]
+    end
+    
+    Agent1 -->|需要@技术| Router
+    Router -->|session_send| Agent2
+    Agent2 --> Bot2[技术 Bot]
+    Bot2 -->|@技术专家| User
+```
+
+### 消息路由流程
+
+```mermaid
+sequenceDiagram
+    participant U as 用户
+    participant B1 as 入口Bot
+    participant G as OpenClaw
+    participant R as 路由中间件
+    participant A1 as 入口Agent
+    participant A2 as 技术Agent
+    participant B2 as 技术Bot
+
+    U->>B1: @入口 帮我解决技术问题
+    B1->>G: Webhook 推送
+    G->>A1: 创建 Session
+    
+    Note over A1: LLM 分析需求
+    A1->>G: 回复："@技术专家 请帮忙"
+    
+    G->>R: deliver() 拦截
+    R->>R: 解析 @技术专家
+    R->>R: 匹配 router-config
+    
+    R->>G: 路由到技术Agent
+    G->>A2: 创建独立 Session
+    
+    Note over A2: LLM 专业回复
+    A2->>G: 我是技术专家...
+    G->>B2: sendMessage()
+    B2->>U: @技术专家 我是...
+```
+
+### 与传统方案对比
+
+```mermaid
+graph LR
+    subgraph "传统方案"
+        T1[用户@万能机器人] --> T2[单一Agent<br/>处理所有领域]
+        T2 --> T3[回复用户]
+        style T2 fill:#ffcccc
+    end
+
+    subgraph "本方案（多Agent协作）"
+        N1[用户@入口机器人] --> N2[入口Agent<br/>分析需求]
+        N2 --> N3{@其他Agent?}
+        N3 -->|是| N4[技术Agent]
+        N3 -->|是| N5[营销Agent]
+        N3 -->|否| N6[直接回复]
+        N4 --> N7[技术Bot回复]
+        N5 --> N8[营销Bot回复]
+        N6 --> N9[入口Bot回复]
+        style N4 fill:#ccffcc
+        style N5 fill:#ccffcc
+    end
+```
+
+> 💡 **查看完整架构图**：参见 [ARCHITECTURE.md](./ARCHITECTURE.md)
+
+---
+
 ## 🚀 快速开始
 
 ### 1. 安装插件
