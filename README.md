@@ -83,11 +83,11 @@ graph TB
     User[用户] -->|@入口机器人| Bot1[飞书 Bot]
     Bot1 -->|Webhook| Gateway[OpenClaw Gateway]
     
-    subgraph "OpenClaw 内部"
+    subgraph OpenClaw["OpenClaw 内部"]
         Gateway --> Router[路由中间件]
-        Router --> Agent1[入口 Agent<br/>isRouter=true]
-        Router --> Agent2[技术 Agent]
-        Router --> Agent3[健康 Agent]
+        Router --> Agent1[入口Agent]
+        Router --> Agent2[技术Agent]
+        Router --> Agent3[健康Agent]
     end
     
     Agent1 -->|需要@技术| Router
@@ -132,23 +132,20 @@ sequenceDiagram
 
 ```mermaid
 graph LR
-    subgraph "传统方案"
-        T1[用户@万能机器人] --> T2[单一Agent<br/>处理所有领域]
+    subgraph Traditional["传统方案"]
+        T1[用户] --> T2[单一Agent处理所有]
         T2 --> T3[回复用户]
-        style T2 fill:#ffcccc
     end
 
-    subgraph "本方案（多Agent协作）"
-        N1[用户@入口机器人] --> N2[入口Agent<br/>分析需求]
-        N2 --> N3{@其他Agent?}
+    subgraph New["本方案-多Agent协作"]
+        N1[用户] --> N2[入口Agent分析]
+        N2 --> N3{需要其他?}
         N3 -->|是| N4[技术Agent]
         N3 -->|是| N5[营销Agent]
         N3 -->|否| N6[直接回复]
-        N4 --> N7[技术Bot回复]
-        N5 --> N8[营销Bot回复]
-        N6 --> N9[入口Bot回复]
-        style N4 fill:#ccffcc
-        style N5 fill:#ccffcc
+        N4 --> N7[技术Bot]
+        N5 --> N8[营销Bot]
+        N6 --> N9[入口Bot]
     end
 ```
 
