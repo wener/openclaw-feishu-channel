@@ -28,49 +28,23 @@
 ## 🏗️ 架构设计
 
 ```mermaid
-graph TB
-    subgraph OpenClaw["OpenClaw Gateway"]
-        direction TB
-        Core[OpenClaw Core]
-        
-        subgraph Agents["多个 Agent"]
-            A1[Agent 1]
-            A2[Agent 2]
-            A3[Agent 3]
-            A4[Agent ...]
-        end
-    end
+graph LR
+    OpenClaw[OpenClaw] --> A1[Agent1]
+    OpenClaw --> A2[Agent2]
+    OpenClaw --> A3[Agent3]
+    OpenClaw --> A4[Agent4]
     
-    subgraph Feishu["飞书群聊"]
-        direction LR
-        Group[群组]
-        
-        subgraph Bots["多个 Bot"]
-            B1[Bot 1]
-            B2[Bot 2]
-            B3[Bot 3]
-            B4[Bot ...]
-        end
-    end
+    A1 --> B1[Bot1]
+    A2 --> B2[Bot2]
+    A3 --> B3[Bot3]
+    A4 --> B4[Bot4]
     
-    Core --> A1
-    Core --> A2
-    Core --> A3
-    Core --> A4
-    
-    A1 --> B1
-    A2 --> B2
-    A3 --> B3
-    A4 --> B4
-    
-    B1 --> Group
+    B1 --> Group[群聊]
     B2 --> Group
     B3 --> Group
     B4 --> Group
     
-    B1 -.->|@Bot2| Group
-    B2 -.->|@Bot3| Group
-    B3 -.->|@Bot1| Group
+    Group --> User[用户]
 ```
 
 **核心流程：**
