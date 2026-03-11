@@ -1,0 +1,40 @@
+{
+  "router": {
+    "enabled": true,
+    "senderMentionKey": "@_user_1",
+    "senderOpenId": "ou_4329a1aa85b00ae1a751b2e186cde884",
+    "routes": {
+      "miloRouter": {
+        "isRouter": true,
+        "accountId": "milo",
+        "botOpenId": "ou_780aa05d4ac936f7ec4a7dccec1036df",
+        "botName": "健康-milo",
+        "aliases": ["milo"]
+      },
+      "techRouter": {
+        "accountId": "product-tech",
+        "botOpenId": "ou_31d580f87e1ea0c3b9fcdd91c115c48f",
+        "botName": "健康 - 产品技术",
+        "aliases": ["tech"]
+      },
+      "healthRouter": {
+        "accountId": "health-advisor",
+        "botOpenId": "ou_e5dc2412f29e7f9c78ecadecca788d18",
+        "botName": "健康 - 健康顾问",
+        "aliases": ["health"]
+      },
+      "marketingRouter": {
+        "accountId": "marketing",
+        "botOpenId": "ou_1421ad51aad4f5d27fa2859710703759",
+        "botName": "健康 - 营销增长",
+        "aliases": ["marketing"]
+      },
+      "internalAffairsRouter": {
+        "accountId": "internal-affairs",
+        "botOpenId": "ou_18dbf4619ced6706c9ffa4e25c3767f9",
+        "botName": "健康 - 内务",
+        "aliases": ["finance"]
+      }
+    }
+  }
+}

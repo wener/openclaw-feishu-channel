@@ -1,0 +1,67 @@
+{
+  "id": "feishu",
+  "channels": ["feishu"],
+  "skills": ["./skills"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "router": {
+        "type": "object",
+        "description": "路由配置 - 定义谁的消息要 route、谁能接收 route、route 规则",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "是否启用路由功能",
+            "default": false
+          },
+          "senderMentionKey": {
+            "type": "string",
+            "description": "Mention 占位符格式，用于构造@消息",
+            "default": "@_user_1"
+          },
+          "senderOpenId": {
+            "type": "string",
+            "description": "发送者 open_id（固定值），用于在路由消息时构造发送者身份",
+            "default": "ou_4329a1aa85b00ae1a751b2e186cde884"
+          },
+          "routes": {
+            "type": "object",
+            "description": "路由目标定义（关键词 → 目标配置）",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "isRouter": {
+                  "type": "boolean",
+                  "description": "是否启用该账户的路由功能（true=该账户的消息需要路由）",
+                  "default": false
+                },
+                "accountId": {
+                  "type": "string",
+                  "description": "目标飞书账户 ID"
+                },
+                "botOpenId": {
+                  "type": "string",
+                  "description": "目标 Bot 的 open_id，用于构造@提及"
+                },
+                "botName": {
+                  "type": "string",
+                  "description": "目标 Bot 显示名称"
+                },
+                "aliases": {
+                  "type": "array",
+                  "description": "别名列表，用户@这些别名时会路由到该目标",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": ["accountId", "botOpenId", "botName", "aliases"]
+            }
+          }
+        },
+        "required": ["routes"]
+      }
+    }
+  }
+}
