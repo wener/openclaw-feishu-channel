@@ -29,32 +29,32 @@
 
 ```mermaid
 graph TB
-    subgraph FeishuGroup["飞书群聊"]
-        User[用户]
-        Bot1[Bot: 入口机器人]
-        Bot2[Bot: 技术专家]
-        Bot3[Bot: 健康顾问]
-        Bot4[Bot: 营销专家]
+    subgraph Feishu["飞书群聊"]
+        U[用户]
+        B1[Bot入口]
+        B2[Bot技术]
+        B3[Bot健康]
+        B4[Bot营销]
     end
     
-    subgraph OpenClaw["OpenClaw Gateway"]
-        Agent1[Agent: 入口]
-        Agent2[Agent: 技术]
-        Agent3[Agent: 健康]
-        Agent4[Agent: 营销]
-        Router[路由中间件]
+    subgraph Gateway["OpenClaw Gateway"]
+        A1[Agent入口]
+        A2[Agent技术]
+        A3[Agent健康]
+        A4[Agent营销]
+        R[路由中间件]
     end
     
-    User -->|@入口| Bot1
-    Bot1 --> Agent1
+    U --> B1
+    B1 --> A1
     
-    Agent1 -->|生成回复：@技术专家| Router
-    Router -->|消息路由| Agent2
-    Agent2 -->|用自己的身份回复| Bot2
-    Bot2 -->|@技术专家| User
+    A1 --> R
+    R --> A2
+    A2 --> B2
+    B2 --> U
     
-    Agent1 -.->|也可以@| Agent3
-    Agent1 -.->|也可以@| Agent4
+    A1 -.-> A3
+    A1 -.-> A4
 ```
 
 **核心流程：**
