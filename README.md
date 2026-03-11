@@ -44,7 +44,7 @@ graph LR
     B3 --> Group
     B4 --> Group
     
-    Group --> User[用户]
+    User[用户] --> Group
 ```
 
 **核心流程：**
